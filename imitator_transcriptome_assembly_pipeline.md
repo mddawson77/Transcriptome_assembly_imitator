@@ -5,6 +5,8 @@
 SolexaQA++ analysis /home/molly/imitator/rawdata/ /home/molly/imitator/rawdata/ 
 ```
 
+### Plot Results Using R
+
 ### Error Correct with Rcorrector (v1.0.1)
 ```
 perl /home/ubuntu/Rcorrector/run_rcorrector.pl -k 31 -t 30 \
@@ -67,7 +69,7 @@ python3 /home/ubuntu/BUSCO_v1.22/BUSCO_v1.22.py -m trans --cpu 18 -l /home/ubunt
 -o imitator_1.2 -in /home/ubuntu/imitator/transrate_v1.0.4beta/binpacker_imitator/imitator_1/BinPacker/good.BinPacker.fa
 ```
 
-### Compare all Metrics and Scores to Determine Best Trinity Assembly and Best BinPacker Assembly
+## Compare all Metrics and Scores to Determine Best Trinity Assembly and Best BinPacker Assembly
 
 ### Merge Best Trinity Assembly and Best BinPacker Assembly with Transfuse (v0.5.0)
 ```
@@ -89,7 +91,7 @@ python3 /home/ubuntu/BUSCO_v1.22/BUSCO_v1.22.py -m trans --cpu 16 -l /home/ubunt
 -o imitator_1.2 -in /home/ubuntu/imitator/transfuse_v0.5.0/transrate_transfuse_imitator_cons/good.transfuse_imitator_cons.fa
 ```
 
-### Continue Pipeline with Original Transfuse Assembly
+## Continue Pipeline with Original Transfuse Assembly
 
 ### Estimate Gene Expression with Kallisto (v0.43.0)
 ```
@@ -103,7 +105,7 @@ kallisto quant -t 32 -i kallisto.idx -o kallisto_orig_transfuse_assembly /home/u
 /home/ubuntu/salmon-0.6.0/bin/salmon quant -p 32 -i salmon.idx -l IU -1 /home/ubuntu/imitator/rcorrector_v1.0.1/KS001F_2_S37_L008_R1_001.cor.fq -2 /home/ubuntu/imitator/rcorrector_v1.0.1/KS001F_2_S37_L008_R2_001.cor.fq -o salmon_orig_transfuse_assembly 
 ```
 
-### Filter Out Contigs Based on Gene Expression <TPM = 1 from Kallisto and Salmon
+### Filter Out Contigs Based on Gene Expression < TPM = 1 from Kallisto and Salmon
 ```
 awk '1>$5{next}1' /home/ubuntu/imitator/kallisto_v0.43.0/kallisto_orig_transfuse_assembly/abundance.tsv | awk '{print $1}' > kallist
 awk '1>$4{next}1' /home/ubuntu/imitator/salmon_v0.6.0/salmon_orig_transfuse_assembly/quant.sf | sed  '1,10d' | awk '{print $1}' > salist
@@ -112,24 +114,24 @@ cat kallist salist | sort -u > uniq_list
 python filter.py /home/ubuntu/imitator/transfuse_v0.5.0/transfuse_imitator_cons.fa uniq_list > Highexp.fasta
 ```
 
-### Evaluate Assembly Completeness with BUSCO (v1.22) 
+### Evaluate TPM Filtration Assembly Completeness with BUSCO (v1.22) 
 ```
 python3 /home/ubuntu/BUSCO_v1.22/BUSCO_v1.22.py -m trans --cpu 16 -l /home/ubuntu/vertebrata \
 -o imitator_2.1 -in /home/ubuntu/imitator/TPM/TPM_orig_transfuse_assembly/Highexp.fasta
 
-### Generate Optimized Assembly Including Quality Check with Transrate (v1.0.4beta)
+### Generate Optimized TPM Filtration Assembly Including Quality Check with Transrate (v1.0.4beta)
 ```
 /home/ubuntu/transrate-1.0.4beta/transrate -o imitator_2 -t 16 \
 -a /home/ubuntu/imitator/TPM/TPM_orig_transfuse_assembly/Highexp.fasta \
 --left /home/ubuntu/imitator/rcorrector_v1.0.1/KS001F_2_S37_L008_R1_001.cor.fq \
 --right /home/ubuntu/imitator/rcorrector_v1.0.1/KS001F_2_S37_L008_R2_001.cor.fq
 ```
-### Evaluate Optimized Assembly Completeness with BUSCO (v1.22) 
+### Evaluate Optimized TPM Filtration Assembly Completeness with BUSCO (v1.22) 
 ```
 python3 /home/ubuntu/BUSCO_v1.22/BUSCO_v1.22.py -m trans --cpu 16 -l /home/ubuntu/vertebrata \
 -o imitator_2.2 -in /home/ubuntu/imitator/transrate_v1.0.4beta/transfuse_imitator/imitator_2/Highexp/good.Highexp.fasta
 ```
-### Continue Pipeline with Optimized Transfuse Assembly
+## Continue Pipeline with Optimized Transfuse Assembly
 
 ### Estimate Gene Expression with Kallisto (v0.43.0)
 ```
@@ -152,12 +154,12 @@ cat kallist salist | sort -u > uniq_list
 python filter.py /home/ubuntu/imitator/transfuse_v0.5.0/transrate_transfuse_imitator_cons/good.transfuse_imitator_cons.fa uniq_list > Highexp.fasta
 ```
 
-### Evaluate Assembly Completeness with BUSCO (v1.22) 
+### Evaluate TPM Filtration Assembly Completeness with BUSCO (v1.22) 
 python3 /home/ubuntu/BUSCO_v1.22/BUSCO_v1.22.py -m trans --cpu 16 -l /home/ubuntu/vertebrata \
 -o imitator_3.1 -in /home/ubuntu/imitator/TPM/TPM_opt_transfuse_assembly/Highexp.fasta
 ```
 
-### Generate Optimized Assembly Including Quality Check with Transrate (v1.0.4beta)
+### Generate Optimized TPM Filtration Assembly Including Quality Check with Transrate (v1.0.4beta)
 ```
 /home/ubuntu/transrate-1.0.4beta/transrate -o imitator_3 -t 16 \
 -a /home/ubuntu/imitator/TPM/TPM_opt_transfuse_assembly/Highexp.fasta \
@@ -165,12 +167,12 @@ python3 /home/ubuntu/BUSCO_v1.22/BUSCO_v1.22.py -m trans --cpu 16 -l /home/ubunt
 --right /home/ubuntu/imitator/rcorrector_v1.0.1/KS001F_2_S37_L008_R2_001.cor.fq
 ```
 
-### Evaluate Optimized Assembly Completeness with BUSCO (v1.22) 
+### Evaluate Optimized TPM Filtration Assembly Completeness with BUSCO (v1.22) 
 ```
 python3 /home/ubuntu/BUSCO_v1.22/BUSCO_v1.22.py -m trans --cpu 16 -l /home/ubuntu/vertebrata \
 -o imitator_3.2 -in /home/ubuntu/imitator/transrate_v1.0.4beta/transfuse_imitator/imitator_3/Highexp/good.Highexp.fasta
 ```
-### Compare all Metrics and Scores to Determine Best Assembly
+## Compare all Metrics and Scores to Determine Best Assembly
 
 ### Annotate with dammit (v0.3)
 ```
